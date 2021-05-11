@@ -40,7 +40,8 @@ module.exports.apply = (ctx, config) => {
       .shortcut('设置群空调制热', { args: ['mode', 'warm'] })
       .shortcut('设置群空调送风', { args: ['mode', 'wind'] })
       .shortcut('设置群空调除湿', { args: ['mode', 'dehumid'] })
-      .shortcut(/^设置群空调(.+)度$/, { args: ['set', '$1'] })
+      .shortcut(/^设置群空调(.+)摄氏度$/, { args: ['set', '$1'] })
+      .shortcut(/^设置群空调(.+)(度|℃)$/, { args: ['set', '$1'] })
       .shortcut('调高群空调', { args: ['up'] })
       .shortcut('调低群空调', { args: ['down'] })
   } else {

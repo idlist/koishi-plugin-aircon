@@ -13,7 +13,7 @@ class AirconSettings {
   constructor(aircon) {
     aircon = { ...aircon }
     this.status = aircon.status ?? false
-    this.mode = Object.keys(Mode).includes(aircon.mode) ? aircon.mode : 1
+    this.mode = aircon.mode >= 1 && aircon.mode <= 4 ? aircon.mode : 1
     this.temperature = aircon.temperature ?? 26
   }
 }
@@ -37,11 +37,11 @@ module.exports = async (session, command, rest, useDatabase) => {
   let aircon = new AirconSettings(channel.aircon)
   channel.aircon = aircon
 
-  const checkBoundary = temp => {
+  const checkBoundary = (temp, mode) => {
     if (temp < -273) return '群空调无法设置到绝对零度以下。'
     else if (temp > 5500) return '群空调无法设置到太阳表面的温度以上。'
-    else if (aircon.mode == 1 && temp > 30) return '群空调在制冷模式下最高温度为 30℃。'
-    else if (aircon.mode == 2 && temp < 16) return '群空调在制热模式下最低温度为 16℃。'
+    else if (mode == 1 && temp > 30) return '群空调在制冷模式下最高温度为 30℃。'
+    else if (mode == 2 && temp < 16) return '群空调在制热模式下最低温度为 16℃。'
     else return undefined
   }
 
@@ -76,20 +76,29 @@ module.exports = async (session, command, rest, useDatabase) => {
       if (aircon.status) {
         let mode = rest[0]
         if (!mode) return '未设置模式。'
+        mode = ModeCode[mode]
 
-        channel.aircon.mode = ModeCode[mode]
+        channel.aircon.mode = mode
+        let info = ''
+        if (mode == 1 && channel.aircon.temperature > 30) {
+          channel.aircon.temperature = 30
+          info = '由于温度限制，群空调已重置为 30℃'
+        }
+        if (mode == 2 && channel.aircon.temperature < 16) {
+          channel.aircon.temperature = 16
+          info = '由于温度限制，群空调已重置为 16℃'
+        }
         return fileImage(`./image/aircon${Random.int(1, 4)}_on${aircon.mode}.jpg`)
-          + `群空调已设置为${Mode[aircon.mode]}模式。`
+          + `群空调已设置为${Mode[aircon.mode]}模式。` + info
       } else {
         return '群空调目前处于关闭状态。'
       }
     case 'set':
       if (aircon.status) {
-        let temp = rest[0].trim()
+        let temp = parseInt(rest[0].trim())
         if (isNaN(temp)) return '设置的温度无效。'
 
-        temp = parseInt(temp)
-        const check = checkBoundary(temp)
+        const check = checkBoundary(temp, aircon.mode)
         if (check) return check
 
         let formerTemp = aircon.temperature
@@ -110,7 +119,7 @@ module.exports = async (session, command, rest, useDatabase) => {
       if (aircon.status) {
         let temp = aircon.temperature + 1
 
-        const check = checkBoundary(temp)
+        const check = checkBoundary(temp, aircon.mode)
         if (check) return check
 
         channel.aircon.temperature = temp
@@ -134,6 +143,6 @@ module.exports = async (session, command, rest, useDatabase) => {
         return '群空调目前处于关闭状态。'
       }
     default:
-      return '不能这么操作群空调。'
+      return '不能这么控制群空调。'
   }
 }
