@@ -59,6 +59,6 @@ module.exports.apply = (ctx, config) => {
   }
 
   AirconCommand.action(({ session }, command, ...rest) => {
-    return aircon(session, command, rest)
+    return aircon(session, command, rest, config.useDatabase)
   })
 }

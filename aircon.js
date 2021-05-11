@@ -3,6 +3,8 @@ const path = require('path')
 const { s, Random } = require('koishi-core')
 const { Mode, ModeCode } = require('./constants')
 
+let ChannelData = []
+
 const fileImage = filePath => {
   return s('image', { url: 'file:///' + path.resolve(__dirname, filePath) })
 }
@@ -16,8 +18,22 @@ class AirconSettings {
   }
 }
 
-module.exports = async (session, command, rest) => {
-  const channel = await session.observeChannel(['aircon'])
+module.exports = async (session, command, rest, useDatabase) => {
+  let channel
+  if (useDatabase) {
+    channel = await session.observeChannel(['aircon'])
+  } else {
+    channel = ChannelData.find(item =>
+      item.platform == session.platform && item.id == session.channelId)
+    if (!channel) {
+      channel = {
+        platform: session.platform,
+        id: session.channelId,
+        aircon: {}
+      }
+      ChannelData.push(channel)
+    }
+  }
   let aircon = new AirconSettings(channel.aircon)
   channel.aircon = aircon
 
