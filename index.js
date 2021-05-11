@@ -1,29 +1,18 @@
-const path = require('path')
-
-const { s, Random } = require('koishi-core')
-const { Mode, ModeCode } = require('./constants')
+const aircon = require('./aircon')
 require('./database')
-
-const fileImage = filePath => {
-  return s('image', { url: 'file:///' + path.resolve(__dirname, filePath) })
-}
-
-class AirconSettings {
-  constructor(aircon) {
-    aircon = { ...aircon }
-    this.status = aircon.status ?? false
-    this.mode = Object.keys(Mode).includes(aircon.mode) ? aircon.mode : 1
-    this.temperature = aircon.temperature ?? 26
-  }
-}
 
 class Config {
   constructor(config) {
-    this.useDatabase = (config && config.useDatabase) ?? true
+    config = { ...config }
+    this.useDatabase = config.useDatabase ?? true
+    this.useDefaultShortcut = config.useDefaultShortcut ?? false
+    this.shortcut = config.shortcut ?? []
   }
 }
 
-module.exports = (ctx, config) => {
+module.exports.name = 'aircon'
+
+module.exports.apply = (ctx, config) => {
   ctx = ctx.group()
   config = new Config(config)
 
@@ -33,119 +22,43 @@ module.exports = (ctx, config) => {
 
   const AirconCommand = ctx
     .command('aircon <command>', '群空调')
-    .example('aircon show  查看群空调')
-    .example('aircon on  打开群空调')
-    .example('aircon off  关闭群空调')
-    .example('aircon mode <name>  设置群空调模式 (cool, warm, wind, dehumid)')
-    .example('aircon set <temp>  设置群空调温度')
-    .example('aircon up  将温度调高 1 度')
-    .example('aircon down  将温度调低 1 度')
     .channelFields(['aircon'])
 
-  AirconCommand.action(async ({ session }, command, ...rest) => {
-    const channel = await session.observeChannel(['aircon'])
-    let aircon = new AirconSettings(channel.aircon)
-    channel.aircon = aircon
+  if (config.useDefaultShortcut) {
+    AirconCommand
+      .example('查看群空调')
+      .example('打开群空调')
+      .example('关闭群空调')
+      .example('设置群空调制冷 / 制热 / 送风 / 除湿')
+      .example('设置群空调 <一个数字> 度')
+      .example('调高群空调')
+      .example('调低群空调')
+      .shortcut('查看群空调', { args: ['show'] })
+      .shortcut('打开群空调', { args: ['on'] })
+      .shortcut('关闭群空调', { args: ['off'] })
+      .shortcut('设置群空调制冷', { args: ['mode', 'cool'] })
+      .shortcut('设置群空调制热', { args: ['mode', 'warm'] })
+      .shortcut('设置群空调送风', { args: ['mode', 'wind'] })
+      .shortcut('设置群空调除湿', { args: ['mode', 'dehumid'] })
+      .shortcut(/^设置群空调(.+)度$/, { args: ['set', '$1'] })
+      .shortcut('调高群空调', { args: ['up'] })
+      .shortcut('调低群空调', { args: ['down'] })
+  } else {
+    AirconCommand
+      .example('aircon show  查看群空调')
+      .example('aircon on  打开群空调')
+      .example('aircon off  关闭群空调')
+      .example('aircon mode <name>  设置群空调模式 (cool, warm, wind, dehumid)')
+      .example('aircon set <temp>  设置群空调温度')
+      .example('aircon up  将温度调高 1 度')
+      .example('aircon down  将温度调低 1 度')
 
-    const checkBoundary = temp => {
-      if (temp < -273) return '群空调无法设置到绝对零度以下。'
-      else if (temp > 5500) return '群空调无法设置到太阳表面的温度以上。'
-      else if (aircon.mode == 1 && temp > 30) return '群空调在制冷模式下最高温度为 30℃。'
-      else if (aircon.mode == 2 && temp < 16) return '群空调在制热模式下最低温度为 16℃。'
-      else return undefined
-    }
+    config.shortcut.forEach(item => {
+      AirconCommand.shortcut(item[0], item[1])
+    })
+  }
 
-    switch (command) {
-      case undefined:
-        return session.execute({ name: 'help', args: ['aircon'] })
-      case 'show':
-      case 'stat':
-      case 'status':
-        if (aircon.status) {
-          return fileImage(`./image/aircon${Random.int(1, 2)}.jpg`)
-            + `\n群空调已开启，当前模式为${Mode[aircon.mode]}，设定温度为 ${aircon.temperature} ℃。`
-        } else {
-          return '群空调已关闭。'
-        }
-      case 'on':
-        if (aircon.status) {
-          return '群空调已处于开启状态。'
-        } else {
-          channel.aircon.status = true
-          return fileImage(`./image/aircon${Random.int(1, 4)}_on${aircon.mode}.jpg`)
-            + `\n群空调已开启，当前模式为${Mode[aircon.mode]}，设定温度为 ${aircon.temperature}℃。`
-        }
-      case 'off':
-        if (aircon.status) {
-          channel.aircon.status = false
-          return fileImage(`./image/aircon${Random.int(1, 4)}_off.jpg`)
-            + '群空调已关闭。'
-        } else {
-          return '群空调已处于关闭状态。'
-        }
-      case 'mode':
-        if (aircon.status) {
-          let mode = rest[0]
-          if (!mode) return '未设置模式。'
-
-          channel.aircon.mode = ModeCode[mode]
-          return fileImage(`./image/aircon${Random.int(1, 4)}_on${aircon.mode}.jpg`)
-            + `群空调已设置为${Mode[aircon.mode]}模式。`
-        } else {
-          return '群空调目前处于关闭状态。'
-        }
-      case 'set':
-        if (aircon.status) {
-          let temp = rest[0]
-          if (isNaN(temp)) return '设置的温度无效。'
-
-          temp = parseInt(temp)
-          const check = checkBoundary(temp)
-          if (check) return check
-
-          let formerTemp = aircon.temperature
-          channel.aircon.temperature = temp
-          if (temp < formerTemp) {
-            return fileImage('./image/aircon_temp_down.jpg')
-              + `群空调已设置为 ${temp}℃。`
-          } else if (temp > formerTemp) {
-            return fileImage('./image/aircon_temp_up.jpg')
-              + `群空调已设置为 ${temp}℃。`
-          } else {
-            return '群空调的温度没有变化。'
-          }
-        } else {
-          return '群空调目前处于关闭状态。'
-        }
-      case 'up': {
-        if (aircon.status) {
-          let temp = aircon.temperature + 1
-
-          const check = checkBoundary(temp)
-          if (check) return check
-
-          channel.aircon.temperature = temp
-          return fileImage('./image/aircon_temp_up.jpg')
-            + `群空调已设置为 ${temp}℃。`
-        } else {
-          return '群空调目前处于关闭状态。'
-        }
-      }
-      case 'down':
-        if (aircon.status) {
-          let temp = aircon.temperature - 1
-
-          const check = checkBoundary(temp)
-          if (check) return check
-
-          channel.aircon.temperature = temp
-          return fileImage('./image/aircon_temp_down.jpg')
-            + `群空调已设置为 ${temp}℃。`
-        } else {
-          return '群空调目前处于关闭状态。'
-        }
-      default:
-        return '不能这么操作群空调。'
-    }
+  AirconCommand.action(({ session }, command, ...rest) => {
+    return aircon(session, command, rest)
   })
 }
