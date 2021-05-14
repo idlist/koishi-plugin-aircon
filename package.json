@@ -1,7 +1,7 @@
 {
   "name": "koishi-plugin-aircon",
   "version": "0.0.2",
-  "description": "Virtual air conditioner for Koishi.js, mostly useless",
+  "description": "Virtual air conditioner for Koishi.js, mostly useless.",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -21,6 +21,6 @@
     "test": "node index.js"
   },
   "peerDependencies": {
-    "koishi": ">=3"
+    "koishi-core": ">=3"
   }
 }

@@ -33,6 +33,7 @@ module.exports.apply = (ctx, config) => {
       .example('设置群空调 <一个数字> 度')
       .example('调高群空调')
       .example('调低群空调')
+      .shortcut('群空调', { args: [] })
       .shortcut('查看群空调', { args: ['show'] })
       .shortcut('打开群空调', { args: ['on'] })
       .shortcut('关闭群空调', { args: ['off'] })
