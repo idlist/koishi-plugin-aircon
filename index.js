@@ -36,6 +36,7 @@ module.exports.apply = (ctx, config) => {
       .shortcut('群空调', { args: [] })
       .shortcut('查看群空调', { args: ['show'] })
       .shortcut('打开群空调', { args: ['on'] })
+      .shortcut('开启群空调', { args: ['on'] })
       .shortcut('关闭群空调', { args: ['off'] })
       .shortcut('设置群空调制冷', { args: ['mode', 'cool'] })
       .shortcut('设置群空调制热', { args: ['mode', 'warm'] })
