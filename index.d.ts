@@ -12,7 +12,7 @@ export interface Channel {
 
 export interface ConfigObject {
   /**
-   * Use database to save the state of aircon.
+   * Whether to use database to save the state of aircon.
    *
    * If set to `false`, a variable would hold the state of aircon.
    *
@@ -20,7 +20,7 @@ export interface ConfigObject {
    */
   useDatabase?: boolean
   /**
-   * Use default shortcuts.
+   * Whether to use default shortcuts.
    *
    * @default false
    */
