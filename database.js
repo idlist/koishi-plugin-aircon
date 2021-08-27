@@ -1,4 +1,4 @@
-const { Database, Channel } = require('koishi-core')
+const { Database, Channel } = require('koishi')
 
 Channel.extend(() => ({ aircon: {} }))
 

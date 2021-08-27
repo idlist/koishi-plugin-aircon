@@ -1,12 +1,23 @@
 const path = require('path')
 
-const { s, Random } = require('koishi-core')
+const { s, Random } = require('koishi')
 const { Mode, ModeCode } = require('./constants')
 
-let ChannelData = []
+/**
+ * @type {Record<string, import('./index').AirconData>}
+ */
+let ChannelData = {}
 
 const fileImage = filePath => {
   return s('image', { url: 'file:///' + path.resolve(__dirname, filePath) })
+}
+
+const checkBoundary = (temp, mode) => {
+  if (temp < -273) return '群空调无法设置到绝对零度以下。'
+  else if (temp > 5500) return '群空调无法设置到太阳表面的温度以上。'
+  else if (mode == 1 && temp > 30) return '群空调在制冷模式下最高温度为 30℃。'
+  else if (mode == 2 && temp < 16) return '群空调在制热模式下最低温度为 16℃。'
+  else return undefined
 }
 
 class AirconSettings {
@@ -19,35 +30,27 @@ class AirconSettings {
 }
 
 module.exports = async (session, command, rest, useDatabase) => {
+  /**
+   * @type { import('./index').Channel }
+   */
   let channel
+
   if (useDatabase) {
     channel = await session.observeChannel(['aircon'])
   } else {
-    channel = ChannelData.find(item =>
-      item.platform == session.platform && item.id == session.channelId)
+    channel = ChannelData[`${session.platform}:${session.channelId}`]
     if (!channel) {
-      channel = {
-        platform: session.platform,
-        id: session.channelId,
-        aircon: {}
-      }
-      ChannelData.push(channel)
+      channel = {}
+      ChannelData[`${session.platform}:${session.channelId}`] = channel
     }
   }
-  let aircon = new AirconSettings(channel.aircon)
+  let aircon = new AirconSettings(channel.aircon ?? {})
   channel.aircon = aircon
-
-  const checkBoundary = (temp, mode) => {
-    if (temp < -273) return '群空调无法设置到绝对零度以下。'
-    else if (temp > 5500) return '群空调无法设置到太阳表面的温度以上。'
-    else if (mode == 1 && temp > 30) return '群空调在制冷模式下最高温度为 30℃。'
-    else if (mode == 2 && temp < 16) return '群空调在制热模式下最低温度为 16℃。'
-    else return undefined
-  }
 
   switch (command) {
     case undefined:
       return session.execute({ name: 'help', args: ['aircon'] })
+
     case 'show':
     case 'stat':
     case 'status':
@@ -57,6 +60,7 @@ module.exports = async (session, command, rest, useDatabase) => {
       } else {
         return '群空调已关闭。'
       }
+
     case 'on':
       if (aircon.status) {
         return '群空调已处于开启状态。'
@@ -65,6 +69,7 @@ module.exports = async (session, command, rest, useDatabase) => {
         return fileImage(`./image/aircon${Random.int(1, 4)}_on${aircon.mode}.jpg`)
           + `\n群空调已开启，当前模式为${Mode[aircon.mode]}，设定温度为 ${aircon.temperature}℃。`
       }
+
     case 'off':
       if (aircon.status) {
         channel.aircon.status = false
@@ -72,6 +77,7 @@ module.exports = async (session, command, rest, useDatabase) => {
       } else {
         return '群空调已处于关闭状态。'
       }
+
     case 'mode':
       if (aircon.status) {
         let mode = rest[0]
@@ -93,6 +99,7 @@ module.exports = async (session, command, rest, useDatabase) => {
       } else {
         return '群空调目前处于关闭状态。'
       }
+
     case 'set':
       if (aircon.status) {
         let temp = parseInt(rest[0].trim())
@@ -115,6 +122,7 @@ module.exports = async (session, command, rest, useDatabase) => {
       } else {
         return '群空调目前处于关闭状态。'
       }
+
     case 'up': {
       if (aircon.status) {
         let temp = aircon.temperature + 1
@@ -129,6 +137,7 @@ module.exports = async (session, command, rest, useDatabase) => {
         return '群空调目前处于关闭状态。'
       }
     }
+
     case 'down':
       if (aircon.status) {
         let temp = aircon.temperature - 1

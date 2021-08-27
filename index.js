@@ -6,14 +6,21 @@ class Config {
     config = { ...config }
     this.useDatabase = config.useDatabase ?? true
     this.useDefaultShortcut = config.useDefaultShortcut ?? false
-    this.shortcut = config.shortcut ?? []
   }
 }
 
 module.exports.name = 'aircon'
 
+/**
+ * @param {import('koishi').Context} ctx
+ * @param {import('./index').ConfigObject} config
+ */
 module.exports.apply = (ctx, config) => {
   ctx = ctx.group()
+
+  /**
+   * @type {import('./index').ConfigObject}
+   */
   config = new Config(config)
 
   ctx.on('connect', () => {
@@ -55,10 +62,6 @@ module.exports.apply = (ctx, config) => {
       .example('aircon set <temp>  设置群空调温度')
       .example('aircon up  将温度调高 1 度')
       .example('aircon down  将温度调低 1 度')
-
-    config.shortcut.forEach(item => {
-      AirconCommand.shortcut(item[0], item[1])
-    })
   }
 
   AirconCommand.action(({ session }, command, ...rest) => {
