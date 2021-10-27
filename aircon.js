@@ -29,6 +29,13 @@ class AirconSettings {
   }
 }
 
+/**
+ * @param {import('koishi').Session} session
+ * @param {string} command
+ * @param {string[]} rest
+ * @param {boolean} useDatabase
+ * @returns {Promise<string>}
+ */
 module.exports = async (session, command, rest, useDatabase) => {
   /**
    * @type { import('./index').Channel }

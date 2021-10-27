@@ -5,7 +5,7 @@ class Config {
   constructor(config) {
     config = { ...config }
     this.useDatabase = config.useDatabase ?? true
-    this.useDefaultShortcut = config.useDefaultShortcut ?? false
+    this.useDefaultShortcut = config.useDefaultShortcut ?? true
   }
 }
 
@@ -64,7 +64,7 @@ module.exports.apply = (ctx, config) => {
       .example('aircon down  将温度调低 1 度')
   }
 
-  AirconCommand.action(({ session }, command, ...rest) => {
-    return aircon(session, command, rest, config.useDatabase)
+  AirconCommand.action(async ({ session }, command, ...rest) => {
+    return await aircon(session, command, rest, config.useDatabase)
   })
 }

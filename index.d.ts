@@ -12,15 +12,15 @@ export interface Channel {
 
 export interface ConfigObject {
   /**
-   * Whether to use database to save the state of aircon.
+   * 是否使用数据库来储存群空调状态。
    *
-   * If set to `false`, a variable would hold the state of aircon.
+   * 在 `false` 的情况下，将使用运行时的变量储存状态。
    *
    * @default true
    */
   useDatabase?: boolean
   /**
-   * Whether to use default shortcuts.
+   * 是否使用默认快捷方式。
    *
    * @default false
    */
