@@ -49,7 +49,7 @@ module.exports = async (session, command, rest, useDatabase) => {
 
   switch (command) {
     case undefined:
-      return session.execute({ name: 'help', args: ['aircon'] })
+      return session.execute('help aircon')
 
     case 'show':
     case 'stat':
