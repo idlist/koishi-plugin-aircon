@@ -30,7 +30,7 @@ aircon <command>
 | 配置项 | 默认值  | 说明 |
 | - | - | - |
 | `useDatabase` | `true` | 是否使用数据库。在未安装数据库的情况下即使手动指定为 `true` 也不会启用数据库。|
-| `useDefaultShortcut` | `false` | 是否使用默认的指令捷径。 **\*1** |
+| `useDefaultShortcut` | `true` | 是否使用默认的指令捷径。 **\*1** |
 
 **\*1** 这些快捷定义于 [这里](https://github.com/idlist/koishi-plugin-aircon/blob/main/src/core.js#L14)。
 
@@ -49,6 +49,10 @@ aircon <command>
 这很正常。
 
 ## 更新记录
+
+### v1.0.1
+
+- 修正了文档中的一个错误。
 
 ### v1.0.0
 
