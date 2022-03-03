@@ -4,9 +4,9 @@ const { s, Random } = require('koishi')
 const { Mode, ModeCode } = require('./constants')
 
 /**
- * @type {Record<string, import('./index').AirconData>}
+ * @type {Record<string, import('../index').AirconData>}
  */
-let ChannelData = {}
+const AirconData = {}
 
 const fileImage = filePath => {
   return s('image', { url: 'file:///' + path.resolve(__dirname, filePath) })
@@ -38,17 +38,17 @@ class AirconSettings {
  */
 module.exports = async (session, command, rest, useDatabase) => {
   /**
-   * @type { import('./index').Channel }
+   * @type { import('../index').Channel }
    */
   let channel
 
   if (useDatabase) {
     channel = await session.observeChannel(['aircon'])
   } else {
-    channel = ChannelData[`${session.platform}:${session.channelId}`]
+    channel = AirconData[`${session.platform}:${session.channelId}`]
     if (!channel) {
       channel = {}
-      ChannelData[`${session.platform}:${session.channelId}`] = channel
+      AirconData[`${session.platform}:${session.channelId}`] = channel
     }
   }
   let aircon = new AirconSettings(channel.aircon ?? {})

@@ -1,70 +1,41 @@
-const aircon = require('./aircon')
-require('./database')
-
-class Config {
-  constructor(config) {
-    config = { ...config }
-    this.useDatabase = config.useDatabase ?? true
-    this.useDefaultShortcut = config.useDefaultShortcut ?? true
-  }
-}
+const { Schema: S } = require('koishi')
+const core = require('./src/core')
 
 module.exports.name = 'aircon'
+
+module.exports.schema = S.object({
+  useDatabase: S.boolean().default(true)
+    .description('是否使用数据库。在没有配置数据库的情况下，即使打开这个选项为也无法启用数据库。'),
+  useDefaultShortcut: S.boolean().default(true)
+    .description('是否使用默认快捷方式。'),
+})
 
 /**
  * @param {import('koishi').Context} ctx
  * @param {import('./index').ConfigObject} config
  */
 module.exports.apply = (ctx, config) => {
-  ctx = ctx.group()
-
-  /**
-   * @type {import('./index').ConfigObject}
-   */
-  config = new Config(config)
-
-  ctx.on('connect', () => {
-    if (!ctx.database) config.useDatabase = false
-  })
-
-  const AirconCommand = ctx
-    .command('aircon <command>', '群空调')
-    .channelFields(['aircon'])
-
-  if (config.useDefaultShortcut) {
-    AirconCommand
-      .example('查看群空调')
-      .example('打开群空调')
-      .example('关闭群空调')
-      .example('设置群空调制冷 / 制热 / 送风 / 除湿')
-      .example('设置群空调 <一个数字> 度')
-      .example('调高群空调')
-      .example('调低群空调')
-      .shortcut('群空调', { args: [] })
-      .shortcut('查看群空调', { args: ['show'] })
-      .shortcut('打开群空调', { args: ['on'] })
-      .shortcut('开启群空调', { args: ['on'] })
-      .shortcut('关闭群空调', { args: ['off'] })
-      .shortcut('设置群空调制冷', { args: ['mode', 'cool'] })
-      .shortcut('设置群空调制热', { args: ['mode', 'warm'] })
-      .shortcut('设置群空调送风', { args: ['mode', 'wind'] })
-      .shortcut('设置群空调除湿', { args: ['mode', 'dehumid'] })
-      .shortcut(/^设置群空调(.+)摄氏度$/, { args: ['set', '$1'] })
-      .shortcut(/^设置群空调(.+)(度|℃)$/, { args: ['set', '$1'] })
-      .shortcut('调高群空调', { args: ['up'] })
-      .shortcut('调低群空调', { args: ['down'] })
-  } else {
-    AirconCommand
-      .example('aircon show  查看群空调')
-      .example('aircon on  打开群空调')
-      .example('aircon off  关闭群空调')
-      .example('aircon mode <name>  设置群空调模式 (cool, warm, wind, dehumid)')
-      .example('aircon set <temp>  设置群空调温度')
-      .example('aircon up  将温度调高 1 度')
-      .example('aircon down  将温度调低 1 度')
+  config = {
+    useDatabase: true,
+    useDefaultShortcut: true,
+    ...config,
   }
 
-  AirconCommand.action(async ({ session }, command, ...rest) => {
-    return await aircon(session, command, rest, config.useDatabase)
+  ctx = ctx.guild()
+
+  ctx.on('ready', () => {
+    ctx.plugin(core, { ...config, useDatabase: false })
+  })
+
+  ctx.on('service', name => {
+    if (name === 'database' && config.useDatabase) {
+      ctx.dispose(core)
+
+      if (ctx.database) {
+        ctx.plugin(core, config)
+      } else {
+        ctx.plugin(core, { ...config, useDatabase: false })
+      }
+    }
   })
 }

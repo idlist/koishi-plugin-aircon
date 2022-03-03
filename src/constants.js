@@ -2,7 +2,7 @@ const Mode = {
   1: '制冷',
   2: '制热',
   3: '送风',
-  4: '除湿'
+  4: '除湿',
 }
 
 const ModeCode = {
@@ -11,7 +11,7 @@ const ModeCode = {
   warm: 2,
   hot: 2,
   wind: 3,
-  dehumid: 4
+  dehumid: 4,
 }
 
 module.exports.Mode = Mode

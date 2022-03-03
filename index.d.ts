@@ -1,16 +1,6 @@
 import { Context } from 'koishi'
 
-export interface AirconData {
-  status: boolean
-  mode: number
-  temperature: number
-}
-
-export interface Channel {
-  aircon: AirconData
-}
-
-export interface ConfigObject {
+export interface Config {
   /**
    * 是否使用数据库来储存群空调状态。
    *
@@ -22,9 +12,9 @@ export interface ConfigObject {
   /**
    * 是否使用默认快捷方式。
    *
-   * @default false
+   * @default true
    */
   useDefaultShortcut?: boolean
 }
 
-export const apply: (ctx: Context, config: ConfigObject) => void
+export const apply: (ctx: Context, config: Config) => void
