@@ -11,7 +11,7 @@
 npm i koishi-plugin-aircon
 ```
 
-然后参照 [安装插件](https://koishi.js.org/guide/context.html#%E5%AE%89%E8%A3%85%E6%8F%92%E4%BB%B6) 继续安装。
+然后在配置文件或入口文件中将插件添加至你的机器人中。
 
 ## 使用方法
 
@@ -21,7 +21,7 @@ aircon <command>
 
 使用 `aircon -h` 或 `help aircon` 查看可用的 `command` 。
 
-在检测到启用了数据库的情况下，该插件会使用数据库进行数据储存，否则会使用临时变量进行储存。使用 `koishi-plugin-mysql` 和 `koishi-plugin-mongo` 都可正常运作。
+在检测到启用了数据库的情况下，该插件会使用数据库进行数据储存，否则会使用临时变量进行储存。
 
 ## 插件配置项
 
@@ -29,21 +29,29 @@ aircon <command>
 
 | 配置项 | 默认值  | 说明 |
 | - | - | - |
-| `useDatabase` | `true` | 是否使用数据库。手动将其设置为 `false` 可在安装了数据库的情况下不使用数据库（不过 `aircon` 字段还是会新增）。在未安装数据库的情况下即使手动指定为 `true` 也不会启用数据库。|
+| `useDatabase` | `true` | 是否使用数据库。在未安装数据库的情况下即使手动指定为 `true` 也不会启用数据库。|
 | `useDefaultShortcut` | `false` | 是否使用默认的指令捷径。 **\*1** |
 
-**\*1** 这些快捷定义于 [这里](https://github.com/idlist/koishi-plugin-aircon/blob/main/index.js#L43)。
+**\*1** 这些快捷定义于 [这里](https://github.com/idlist/koishi-plugin-aircon/blob/main/src/core.js#L14)。
 
-考虑到有的人不喜欢无前缀触发指令，或者想自定义快捷方式，这个配置项被默认设置为 `false` 。
+如果你不喜欢无前缀触发指令，或者想自定义快捷方式，可以将配置项设置为 `false` 。
 
-如果想要自定义快捷方式，请参照 [快捷方式](https://koishi.js.org/guide/execute.html#快捷方式) ，使用 `ctx.command('aircon').shortcut()` 自定义快捷方式。
+如果想要自定义快捷方式，请参照 [快捷方式](https://koishi.js.org/guide/command/execution.html#%E5%BF%AB%E6%8D%B7%E6%96%B9%E5%BC%8F) 一节自定义快捷方式。
 
 ## Q&A
 
 - 想要更多功能！
 
-未来可能在正式版中加入随机事件，但这取决于作者咕咕咕咕咕咕。
+未来可能在正式版中加入随机事件，但这取决于作者咕咕咕咕咕咕。（但是过了这么久都没加，估计是没戏了。）
 
 - 发现了个 bug！
 
-看看版本号，这很正常。
+这很正常。
+
+## 更新记录
+
+### v1.0.0
+
+- 对 v4 做了简单的适配，增加了 Schema。
+
+  如果需要继续用于 v3，请使用 v0.1 版本。

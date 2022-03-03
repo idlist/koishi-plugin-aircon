@@ -5,6 +5,8 @@ const Aircon = require('./aircon')
  * @param {import('../index').Config} config
  */
 module.exports = (ctx, config) => {
+  if (config.useDatabase) ctx.plugin(require('./database'))
+
   const AirconCommand = ctx
     .command('aircon <command>', '群空调')
     .channelFields(['aircon'])
@@ -43,7 +45,7 @@ module.exports = (ctx, config) => {
   }
 
   AirconCommand.action(async ({ session }, command, ...rest) => {
-    const aircon = await Aircon.ready(session, {
+    const aircon = await Aircon.init(session, {
       useDatabase: config.useDatabase,
     })
 
