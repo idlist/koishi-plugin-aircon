@@ -3,8 +3,6 @@
  */
 module.exports = ctx => {
   ctx.model.extend('channel', {
-    fields: {
-      aircon: 'json',
-    },
+    aircon: 'json',
   })
 }

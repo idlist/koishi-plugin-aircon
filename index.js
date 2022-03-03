@@ -1,4 +1,5 @@
 const { Schema: S } = require('koishi')
+const database = require('./src/database')
 const core = require('./src/core')
 
 module.exports.name = 'aircon'
@@ -32,6 +33,7 @@ module.exports.apply = (ctx, config) => {
       ctx.dispose(core)
 
       if (ctx.database) {
+        ctx.plugin(database)
         ctx.plugin(core, config)
       } else {
         ctx.plugin(core, { ...config, useDatabase: false })

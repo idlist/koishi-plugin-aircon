@@ -17,4 +17,4 @@ export interface Config {
   useDefaultShortcut?: boolean
 }
 
-export const apply: (ctx: Context, config: Config) => void
+export declare const apply: (ctx: Context, config: Config) => void

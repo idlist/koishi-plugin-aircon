@@ -1,6 +1,6 @@
 {
   "name": "koishi-plugin-aircon",
-  "version": "0.1.1",
+  "version": "1.0.0",
   "description": "Virtual air conditioner for Koishi.js, mostly useless.",
   "author": "i'DLisT <me@idl.ist> (https://idl.ist/)",
   "license": "MIT",
@@ -19,6 +19,6 @@
   "main": "index.js",
   "scripts": {},
   "peerDependencies": {
-    "koishi-core": ">=3"
+    "koishi": "^4.0.0"
   }
 }

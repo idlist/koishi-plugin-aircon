@@ -42,7 +42,32 @@ module.exports = (ctx, config) => {
       .example('aircon down  将温度调低 1 度')
   }
 
-  AirconCommand.action(async ({ session }, ...commands) => {
-    const aircon = new Aircon(session, { useDatabase: config.useDatabase })
+  AirconCommand.action(async ({ session }, command, ...rest) => {
+    const aircon = await Aircon.ready(session, {
+      useDatabase: config.useDatabase,
+    })
+
+    switch (command) {
+      case undefined:
+        return session.execute('help aircon')
+      case 'show':
+      case 'stat':
+      case 'status':
+        return aircon.show()
+      case 'on':
+        return aircon.on()
+      case 'off':
+        return aircon.off()
+      case 'mode':
+        return aircon.mode(rest[0])
+      case 'set':
+        return aircon.set(rest[0])
+      case 'up':
+        return aircon.up()
+      case 'down':
+        return aircon.down()
+      default:
+        return '不能这么控制群空调。'
+    }
   })
 }

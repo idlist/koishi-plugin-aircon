@@ -3,7 +3,7 @@
 [![npm](https://img.shields.io/npm/v/koishi-plugin-aircon?style=flat-square)](https://www.npmjs.com/package/koishi-plugin-aircon)
 [![npm-download](https://img.shields.io/npm/dw/koishi-plugin-aircon?style=flat-square)](https://www.npmjs.com/package/koishi-plugin-aircon)
 
-一个用于 **[Koishi v3](https://github.com/koishijs/koishi)** 的给群里开空调的插件。
+一个用于 **[Koishi v4](https://github.com/koishijs/koishi)** 的给群里开空调的插件。
 
 ## 安装方法
 
