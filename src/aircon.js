@@ -1,13 +1,13 @@
 const { resolve } = require('path')
 
-const { s, Random } = require('koishi')
+const { segment, Random } = require('koishi')
 const { Mode, ModeCode } = require('./constants')
 
 /**
  * @param {string} filePath
  */
 const fileImage = filePath => {
-  return s('image', { url: 'file:///' + resolve(__dirname, '../image', filePath) })
+  return segment('image', { url: 'file:///' + resolve(__dirname, '../image', filePath) })
 }
 
 /**
