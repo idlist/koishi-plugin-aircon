@@ -1,6 +1,6 @@
 {
   "name": "koishi-plugin-aircon",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Virtual air conditioner for Koishi.js.",
   "author": "i'DLisT <me@idl.ist> (https://idl.ist/)",
   "license": "MIT",
@@ -16,9 +16,19 @@
     "url": "https://github.com/idlist/koishi-plugin-aircon/issues"
   },
   "homepage": "https://github.com/idlist/koishi-plugin-aircon#readme",
+  "koishi": {
+    "description": {
+      "zh": "群空调",
+      "en": "Air conditioning in your gourp chat"
+    },
+    "service": {
+      "optional": ["database"]
+    },
+    "locales": ["zh"]
+  },
   "main": "index.js",
   "scripts": {},
   "peerDependencies": {
-    "koishi": "^4.0.0"
+    "koishi": "^4.9.0"
   }
 }

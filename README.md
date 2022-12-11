@@ -19,7 +19,7 @@ npm i koishi-plugin-aircon
 aircon <command>
 ```
 
-使用 `aircon -h` 或 `help aircon` 查看可用的 `command` 。
+使用 `aircon -h` 或 `help aircon` 或 `aircon` 查看可用的 `command` 。
 
 在检测到启用了数据库的情况下，该插件会使用数据库进行数据储存，否则会使用临时变量进行储存。
 
@@ -50,6 +50,16 @@ aircon <command>
 
 ## 更新记录
 
+<details>
+<summary><b>v1.0</b> （用于 Koishi v4）</summary>
+
+### v1.1.0
+
+*此插件需要 Koishi 版本至少为 v4.9。如有需要，请使用 v1.3.3。*
+
+- 重载逻辑使用的事件从 `service` 变更为 `internal/service`
+- 新增 `package.json` 中的 `koishi` 字段。
+
 ### v1.0.1
 
 - 修正了文档中的一个错误。
@@ -59,3 +69,5 @@ aircon <command>
 - 对 v4 做了简单的适配，增加了 Schema。
 
   如果需要继续用于 v3，请使用 v0.1 版本。
+
+</details>
