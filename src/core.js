@@ -8,7 +8,7 @@ module.exports = (ctx, config) => {
   if (config.useDatabase) ctx.plugin(require('./database'))
 
   const AirconCommand = ctx
-    .command('aircon <command>', '群空调')
+    .command('aircon <command> <rest:text>', '群空调')
     .channelFields(['aircon'])
 
   if (config.useDefaultShortcut) {
@@ -44,7 +44,9 @@ module.exports = (ctx, config) => {
       .example('aircon down  将温度调低 1 度')
   }
 
-  AirconCommand.action(async ({ session }, command, ...rest) => {
+  AirconCommand.action(async ({ session }, command, rest) => {
+    rest = rest.split(' ')
+
     const aircon = await Aircon.init(session, {
       useDatabase: config.useDatabase,
     })
