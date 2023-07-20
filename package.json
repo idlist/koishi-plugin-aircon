@@ -16,6 +16,12 @@
     "url": "https://github.com/idlist/koishi-plugin-aircon/issues"
   },
   "homepage": "https://github.com/idlist/koishi-plugin-aircon#readme",
+  "files": [
+    "src",
+    "image",
+    "index.js",
+    "index.d.ts"
+  ],
   "koishi": {
     "description": {
       "zh": "群空调",

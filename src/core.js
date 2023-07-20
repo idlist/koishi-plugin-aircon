@@ -45,7 +45,7 @@ module.exports = (ctx, config) => {
   }
 
   AirconCommand.action(async ({ session }, command, rest) => {
-    rest = rest.split(' ')
+    rest = rest ? rest.split(' ') : []
 
     const aircon = await Aircon.init(session, {
       useDatabase: config.useDatabase,

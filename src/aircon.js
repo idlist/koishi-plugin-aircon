@@ -1,13 +1,23 @@
 const { resolve } = require('path')
 
-const { segment, Random } = require('koishi')
+const { h, Random } = require('koishi')
 const { Mode, ModeCode } = require('./constants')
+
+/**
+ * @typedef {import('koishi').Session} Session
+ */
+
+/**
+ * @typedef {import('./database').AirconData} AirconData
+ * @typedef {import('./database').ChannelData} ChannelData
+ * @typedef {import('../types/aircon').AirconOptions} AirconOptions
+ */
 
 /**
  * @param {string} filePath
  */
-const fileImage = filePath => {
-  return segment('image', { url: 'file:///' + resolve(__dirname, '../image', filePath) })
+const fileImage = (filePath) => {
+  return h('image', { url: 'file:///' + resolve(__dirname, '../image', filePath) })
 }
 
 /**
@@ -24,26 +34,23 @@ const checkBoundary = (temp, mode) => {
 }
 
 /**
- * @type {Record<string, import('./database').AirconData>}
+ * @type {Record<string, AirconData>}
  */
 const AirconData = {}
 
 /**
- * @param {import('./database').AirconData} aircon
+ * @param {AirconData} aircon
  */
-const validateAircon = aircon => {
+const validateAircon = (aircon) => {
   aircon.status = aircon.status ?? false
   aircon.mode = aircon.mode >= 1 && aircon.mode <= 4 ? aircon.mode : 1
   aircon.temperature = aircon.temperature ?? 26
   return aircon
 }
 
-/**
- * @type {import('./aircon').Aircon}
- */
 class Aircon {
   /**
-   * @param {import('./database').ChannelData} channel
+   * @param {ChannelData} channel
    */
   constructor(channel) {
     this.channel = channel
@@ -52,8 +59,8 @@ class Aircon {
   }
 
   /**
-   * @param {import('koishi').Session} session
-   * @param {import('./aircon').AirconOptions} options
+   * @param {Session} session
+   * @param {AirconOptions} options
    */
   static async init(session, options) {
     let channel
@@ -74,8 +81,10 @@ class Aircon {
     const aircon = this.channel.aircon
 
     if (aircon.status) {
-      return fileImage(`aircon${Random.int(1, 2)}.jpg`) +
-        `\n群空调已开启，当前模式为${Mode[aircon.mode]}，设定温度为 ${aircon.temperature} ℃。`
+      return [
+        fileImage(`aircon${Random.int(1, 2)}.jpg`),
+        h('p', `群空调已开启，当前模式为${Mode[aircon.mode]}，设定温度为 ${aircon.temperature} ℃。`),
+      ]
     } else {
       return '群空调已关闭。'
     }
@@ -88,8 +97,10 @@ class Aircon {
       return '群空调已处于开启状态。'
     } else {
       this.channel.aircon.status = true
-      return fileImage(`aircon${Random.int(1, 4)}_on${aircon.mode}.jpg`) +
-        `\n群空调已开启，当前模式为${Mode[aircon.mode]}，设定温度为 ${aircon.temperature}℃。`
+      return [
+        fileImage(`aircon${Random.int(1, 4)}_on${aircon.mode}.jpg`),
+        h('p', `群空调已开启，当前模式为${Mode[aircon.mode]}，设定温度为 ${aircon.temperature}℃。`),
+      ]
     }
   }
 
@@ -128,8 +139,13 @@ class Aircon {
         this.channel.aircon.temperature = 16
         info = '由于温度限制，群空调已重置为 16℃'
       }
-      return fileImage(`aircon${Random.int(1, 4)}_on${aircon.mode}.jpg`) +
-        `\n群空调已设置为${Mode[aircon.mode]}模式。` + info
+      return [
+        fileImage(`aircon${Random.int(1, 4)}_on${aircon.mode}.jpg`),
+        h('p', [
+          `群空调已设置为${Mode[aircon.mode]}模式。`,
+          info,
+        ]),
+      ]
     }
   }
 
@@ -151,11 +167,15 @@ class Aircon {
       const formerTemp = aircon.temperature
       this.channel.aircon.temperature = temp
       if (temp < formerTemp) {
-        return fileImage('aircon_temp_down.jpg') +
-          `群空调已设置为 ${temp}℃。`
+        return [
+          fileImage('aircon_temp_down.jpg'),
+          h('p', `群空调已设置为 ${temp}℃。`),
+        ]
       } else if (temp > formerTemp) {
-        return fileImage('aircon_temp_up.jpg') +
-          `群空调已设置为 ${temp}℃。`
+        return [
+          fileImage('aircon_temp_up.jpg'),
+          h('p', `群空调已设置为 ${temp}℃。`),
+        ]
       } else {
         return '群空调的温度没有变化。'
       }
@@ -174,8 +194,10 @@ class Aircon {
       if (outboundMessage) return outboundMessage
 
       this.channel.aircon.temperature = temp
-      return fileImage('aircon_temp_up.jpg') +
-        `群空调已设置为 ${temp}℃。`
+      return [
+        fileImage('aircon_temp_up.jpg'),
+        h('p', `群空调已设置为 ${temp}℃。`),
+      ]
     }
   }
 
@@ -191,8 +213,10 @@ class Aircon {
       if (outboundMessage) return outboundMessage
 
       this.channel.aircon.temperature = temp
-      return fileImage('aircon_temp_down.jpg') +
-        `群空调已设置为 ${temp}℃。`
+      return [
+        fileImage('aircon_temp_down.jpg'),
+        h('p', `群空调已设置为 ${temp}℃。`),
+      ]
     }
   }
 }
