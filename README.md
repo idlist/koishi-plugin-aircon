@@ -53,9 +53,14 @@ aircon <command>
 <details>
 <summary><b>v1.0</b> （用于 Koishi v4）</summary>
 
+### v1.1.1
+
+- 从 `segment` 换用为 `h`，现在大概有正常的换行了。
+- 修复了无法给空调设置负数温度的问题。
+
 ### v1.1.0
 
-*此插件需要 Koishi 版本至少为 v4.9。如有需要，请使用 v1.3.3。*
+*此插件需要 Koishi 版本至少为 v4.9。如有需要，请使用 v1.0.1。*
 
 - 重载逻辑使用的事件从 `service` 变更为 `internal/service`
 - 新增 `package.json` 中的 `koishi` 字段。
